@@ -21,5 +21,17 @@ app.Use(async (context, next) =>
 });
 
 
+async Task Listner(WebSocket ws)
+{
+
+    while (true)
+    {
+
+        if (ws.State == WebSocketState.Closed) break;
+        //either use a singelton of the sockethelper or another way to use the socket 
+    }
+
+}
+
 app.UseWebSockets();
 app.Run();

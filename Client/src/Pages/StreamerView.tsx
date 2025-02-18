@@ -5,7 +5,9 @@ export const StreamerView: React.FC = () => {
   // const VidRef = useRef<any>(null);
   const [vid, setVid] = useState<MediaStream | null>(null);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
-  // const socket = useSocket();
+  4;
+  const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
+  const socket = useSocket();
 
   const playVidFromCamera = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -32,8 +34,19 @@ export const StreamerView: React.FC = () => {
     });
 
     mediaRecorder.ondataavailable = (event) => {
-      if (isStreaming) console.log("data:", event);
+      if (!isStreaming || !socket) return;
+      console.log("data:", event);
+
+      socket.send(
+        JSON.stringify({
+          Type: "binarydata",
+          Payload: {
+            data: event,
+          },
+        })
+      );
     };
+
     mediaRecorder.onstart = () => {
       if (isStreaming) console.log("started");
     };
@@ -46,10 +59,21 @@ export const StreamerView: React.FC = () => {
       mediaRecorder.start(0);
     }
     mediaRecorder.start(1000);
+    setRecorder(mediaRecorder);
   }
 
+  function handleStopStream() {
+    if (!recorder) return;
+    recorder.stop();
+    setRecorder(null);
+  }
   useEffect(() => {
     playVidFromCamera();
+
+    return () => {
+        
+      handleStopStream();
+    };
   }, []);
 
   return (
@@ -63,6 +87,12 @@ export const StreamerView: React.FC = () => {
           onClick={handleStream}
         >
           stream
+        </button>
+        <button
+          className="bg-white p-2 border border-black text-black rounded-lg"
+          onClick={handleStopStream}
+        >
+          Stop stream
         </button>
       </div>
     </>
