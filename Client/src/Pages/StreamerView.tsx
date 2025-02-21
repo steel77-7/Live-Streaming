@@ -7,20 +7,24 @@ export const StreamerView: React.FC = () => {
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   4;
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
+  // const socket = useSocket();
   const socket = useSocket();
 
   const playVidFromCamera = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: {
-        width: { ideal: 1920 },
-        height: { ideal: 1080 },
-        frameRate: { ideal: 30 },
-      },
-    });
-
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: {
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          frameRate: { ideal: 30 },
+        },
+      });
+      setVid(stream);
+    } catch (e) {
+      console.error(e);
+    }
     // if (VidRef.current) VidRef.current.srcObject = stream;
-    setVid(stream);
     return;
   };
 
@@ -39,7 +43,7 @@ export const StreamerView: React.FC = () => {
 
       socket.send(
         JSON.stringify({
-          Type: "binarydata",
+          Type: "stream",
           Payload: {
             data: event,
           },
@@ -55,9 +59,7 @@ export const StreamerView: React.FC = () => {
       console.log("stopped");
       setIsStreaming(false);
     };
-    if (!isStreaming) {
-      mediaRecorder.start(0);
-    }
+   
     mediaRecorder.start(1000);
     setRecorder(mediaRecorder);
   }
@@ -71,7 +73,6 @@ export const StreamerView: React.FC = () => {
     playVidFromCamera();
 
     return () => {
-        
       handleStopStream();
     };
   }, []);
