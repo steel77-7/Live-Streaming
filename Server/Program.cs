@@ -84,6 +84,7 @@ app.Map("/ws", async (context) =>
 
 async Task SocketListener(WebSocket ws)
 {
+    webSoc.StartFFmpeg();
     while (true)
     {
         if (ws.State == WebSocketState.Closed) break;
@@ -91,6 +92,8 @@ async Task SocketListener(WebSocket ws)
         //either use a singelton of the sockethelper or another way to use the socket
     }
    await  webSoc.CloseConnection(ws);
+   webSoc.ffmpegInputStream.Close();
+       webSoc. ffmpegProcess.WaitForExit();
 }
 
 app.UseCors("MyCorsPolicy");

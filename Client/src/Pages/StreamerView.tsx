@@ -2,12 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { VideoContainer } from "../Components/Streaming/VideoContainer";
 import { useSocket } from "../hooks/useSocket";
 export const StreamerView: React.FC = () => {
-  // const VidRef = useRef<any>(null);
   const [vid, setVid] = useState<MediaStream | null>(null);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   4;
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
-  // const socket = useSocket();
   const socket = useSocket();
 
   const playVidFromCamera = async () => {
@@ -24,10 +22,8 @@ export const StreamerView: React.FC = () => {
     } catch (e) {
       console.error(e);
     }
-    // if (VidRef.current) VidRef.current.srcObject = stream;
     return;
   };
-
   function handleStream() {
     if (!vid) return;
     setIsStreaming((prev: boolean) => !prev);
@@ -39,16 +35,8 @@ export const StreamerView: React.FC = () => {
 
     mediaRecorder.ondataavailable = (event) => {
       if (!isStreaming || !socket) return;
-      console.log("data:", event);
-
-      socket.send(
-        JSON.stringify({
-          Type: "stream",
-          Payload: {
-            data: event,
-          },
-        })
-      );
+      console.log("data:", event.data);
+      socket.send(event.data);
     };
 
     mediaRecorder.onstart = () => {
@@ -59,7 +47,7 @@ export const StreamerView: React.FC = () => {
       console.log("stopped");
       setIsStreaming(false);
     };
-   
+
     mediaRecorder.start(1000);
     setRecorder(mediaRecorder);
   }

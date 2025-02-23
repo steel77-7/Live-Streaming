@@ -9,7 +9,7 @@ public class Message
 public class PayloadData
 {
 
-    public string? SDP { get; set; }
+    public string? Stream { get; set; }
 
     public string? IceCandidate { get; set; }
     public string? RoomId { get; set; }
