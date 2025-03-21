@@ -1,8 +1,11 @@
 using System.Net.WebSockets;
 using Server.Api.SocketHelper;
 using System.Net;
+using Server.Models_;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<SocketHelper>();
+//builder.Services.AddDbContext<UserContext>(options=> options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+
 
 builder.Services.AddCors(options =>
 {
@@ -15,6 +18,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddControllers();
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
@@ -54,7 +58,11 @@ app.UseWebSockets(webSocketOptions);
           context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
     }
 }); */
-
+app.UseRouting();
+app.UseCors("MyCorsPolicy");
+app.UseWebSockets(webSocketOptions);
+app.UseAuthorization();
+app.MapControllers();
 app.Map("/ws", async (context) =>
 {
     //var buffer = new byte[1024 * 4];
@@ -96,6 +104,5 @@ async Task SocketListener(WebSocket ws)
        webSoc. ffmpegProcess.WaitForExit();
 }
 
-app.UseCors("MyCorsPolicy");
-//app.UseWebSockets();
+
 app.Run();
