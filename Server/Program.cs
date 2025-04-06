@@ -1,10 +1,16 @@
 using System.Net.WebSockets;
 using Server.Api.SocketHelper;
 using System.Net;
-using Server.Models_;
+using Microsoft.EntityFrameworkCore;
+using Server.Infrastructure.Repository;
+using Server.Application_.Interfaces;
+using Server.Application_.Services;
+using Server.Infrastructure.Data;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<SocketHelper>();
-//builder.Services.AddDbContext<UserContext>(options=> options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+builder.Services.AddDbContext<AppDbContext>(options=> options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
+builder.Services.AddScoped<IUserService, UserServices>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 builder.Services.AddCors(options =>

@@ -1,9 +1,10 @@
-using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Server.Infrastructure.Entities;
 
 public class User
 {
+    [Key]
 public int Id{get; set;}
 public string Username{get; set;}
 

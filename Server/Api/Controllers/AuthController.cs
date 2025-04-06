@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Server.Application_.Services;
+using Server.Application_.Interfaces;
+
 using Server.Dtos;
 using Server.Infrastructure.Entities;
+
 
 namespace Server.Controllers;
 
@@ -9,9 +12,9 @@ namespace Server.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly UserServices _uservice;
+    private readonly IUserService _uservice;
 
-    public UserController(UserServices u)
+    public UserController(IUserService u)
     {
         _uservice = u;
     }
@@ -25,6 +28,8 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest res)
     {
+        Console.WriteLine(1);
+
        bool status= await _uservice.CreateUser(
             new User()
             {
@@ -33,12 +38,15 @@ public class UserController : ControllerBase
                 Password = res.Password,
             }
         );
+        Console.WriteLine("In the contoler" + status);
         return Ok(res);
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest res)
+    public async Task<IActionResult> Login([FromBody] LoginRequest res)
     {
-        return Ok(res);
+        User r = await _uservice.GetByEmail(res.Identifier);
+        
+        return Ok(r);
     }
 }

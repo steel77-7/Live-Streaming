@@ -4,7 +4,6 @@ namespace Server.Dtos;
 
 public class LoginRequest
 {
-    string Identifier { get; }
-
-    string Password { get; } 
+    public string Identifier { get; set;}
+    public string Password { get; set;} 
 }
