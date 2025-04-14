@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Server.Application_.Services;
 using Server.Application_.Interfaces;
-
+using Server.Application_.Services;
 using Server.Dtos;
 using Server.Infrastructure.Entities;
-
 
 namespace Server.Controllers;
 
@@ -30,7 +28,7 @@ public class UserController : ControllerBase
     {
         Console.WriteLine(1);
 
-       bool status= await _uservice.CreateUser(
+        bool status = await _uservice.CreateUser(
             new User()
             {
                 Email = res.Email,
@@ -45,8 +43,11 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest res)
     {
-        User r = await _uservice.GetByEmail(res.Identifier);
-        
-        return Ok(r);
+        if (await _uservice.GetByEmailAndPassword(res.Identifier, res.Password))
+        {
+            return Ok();
+        }
+
+        return NotFound();
     }
 }

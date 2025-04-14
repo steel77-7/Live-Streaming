@@ -1,3 +1,4 @@
+using Server.Api.Utils;
 using Server.Application_.Interfaces;
 using Server.Infrastructure.Entities;
 
@@ -6,6 +7,7 @@ namespace Server.Application_.Services;
 public class UserServices : IUserService
 {
     private readonly IUserRepository _userRepo;
+    private readonly Hasher h = new Hasher();
 
     //useless
     /*  private string HashPassword(string pass)
@@ -45,6 +47,11 @@ public class UserServices : IUserService
     public async Task<bool> CreateUser(User user)
     {
         Console.WriteLine("User has arrived i nthe service layer");
+        Console.WriteLine(user.Password);
+        string hashedpass = h.Hash(user.Password);
+        Console.WriteLine("password is : " + user.Password + "\n hash : " + hashedpass);
+        Console.WriteLine("is it true : " + h.Verify(user.Password, hashedpass));
+        user.Password = hashedpass;
         return await _userRepo.AddNewUser(user);
     }
 }
